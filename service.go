@@ -78,6 +78,7 @@ func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 
 // Accept a client connection and collect it in a channel
 func acceptConnection(listener net.Listener, listen chan<- net.Conn) {
+	log.Println("ACCEPT CONNECTION")
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -88,12 +89,14 @@ func acceptConnection(listener net.Listener, listen chan<- net.Conn) {
 }
 
 func handleClient(client net.Conn) {
+	log.Println("HANDLE CLIENT")
 	for {
 		buf := make([]byte, 4096)
 		numbytes, err := client.Read(buf)
 		if numbytes == 0 || err != nil {
 			return
 		}
+		log.Println(string(buf))
 		client.Write(buf)
 	}
 }
