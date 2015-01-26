@@ -38,14 +38,15 @@ func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 		}
 	}
 
-	process := service.GetProcess()
-	process()
-
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
 
+	//process := service.GetProcess()
+	//process()
+
 	// Set up listener for defined host and port
-	listener, err := net.Listen("tcp", ":"+strconv.Itoa(service.GetPort()))
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(80))
+
 	if err != nil {
 		return "Possibly was a problem with the port binding", err
 	}
