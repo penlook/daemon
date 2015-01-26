@@ -227,7 +227,7 @@ fi
 
 exec="{{.Path}}"
 servname="{{.Description}}"
-sudo mkdir -p /var/lock/subsys
+mkdir -p /var/lock/subsys
 proc=$(basename $0)
 pidfile="/var/run/$proc.pid"
 lockfile="/var/lock/subsys/$proc"
