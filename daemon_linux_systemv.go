@@ -75,7 +75,13 @@ func (linux *systemVRecord) Install() (string, error) {
 		return installAction + failed, err
 	}
 
-	templ, err := template.New("systemVConfig").Parse(systemVConfig)
+	templ, err := template.New("systemVConfig").Parse(ubuntu)
+
+	// Patch for Centos and Ubuntu
+	if _, err := os.Stat("/etc/centos-release"); err == nil {
+    	templ, err = template.New("systemVConfig").Parse(centos)
+	}
+
 	if err != nil {
 		return installAction + failed, err
 	}
@@ -199,7 +205,8 @@ func (linux *systemVRecord) Status() (string, error) {
 	return statusAction, nil
 }
 
-var systemVConfig = `#! /bin/sh
+var centos = `
+#! /bin/sh
 #
 #       /etc/rc.d/init.d/{{.Name}}
 #
@@ -300,4 +307,85 @@ case "$1" in
 esac
 
 exit $?
+`
+
+var ubuntu = `
+#! /bin/sh
+#
+#       /etc/init.d/{{.Name}}
+#
+#       Starts {{.Name}} as a daemon
+#
+# chkconfig: 2345 87 17
+# description: Starts and stops a single {{.Name}} instance on this system
+
+### BEGIN INIT INFO
+# Provides: {{.Name}}
+# Required-Start: $network $named
+# Required-Stop: $network $named
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: This service manages the {{.Description}}.
+# Description: {{.Description}}
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+exec="{{.Path}}"
+servname="{{.Description}}"
+proc=$(basename $0)
+rundir=/var/run
+pidfile="$rundir/$proc.pid"
+lockfile="/var/lock/subsys/$proc"
+stdoutlog="/var/log/$proc.log"
+stderrlog="/var/log/$proc.err"
+
+[ -d $(dirname $lockfile) ] || mkdir -p $(dirname $lockfile)
+
+[ -e /etc/sysconfig/$proc ] && . /etc/sysconfig/$proc
+
+test -x $exec || exit 0
+
+set -e
+
+case "$1" in
+  start)
+		[ -e $pidfile ] && echo "Starting {{.Description}}:" && echo "\t\t\t\t\t[\033[31mFAILED\033[0m]" && exit 0
+        sudo mkdir -p $rundir
+        sudo touch $pidfile
+        user=$(whoami)
+        sudo chown $user:$user $pidfile
+        $exec & > /dev/null
+		echo "Starting {{.Description}}: \t\t\t\t\t[  \033[32mOK\033[0m  ]"
+		sleep 1
+        echo
+        ;;
+  stop)
+		echo "Stoping {{.Description}}: \t\t\t\t\t[  \033[32mOK\033[0m  ]"
+		sudo rm -rf $pidfile
+        PID=$(sudo pgrep api)
+        sudo kill -9 $PID
+        ;;
+
+  restart|force-reload)
+        ${0} stop
+        ${0} start
+        ;;
+
+  status)
+        echo -n "{{.Name}} (pid $(sudo pgrep {{.Name}})) is "
+        if [ -e $pidfile ]
+        then
+                echo "running"
+        else
+                echo "not running"
+                exit 1
+        fi
+        ;;
+
+  *)
+        echo "Usage: /etc/init.d/$NAME {start|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+exit 1
 `

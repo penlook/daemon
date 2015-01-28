@@ -14,8 +14,6 @@ type ServiceDaemon struct {
 
 func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 
-	usage := "Usage: myservice install | remove | start | stop | status"
-
 	// if received any kind of command, do it
 	if len(os.Args) > 1 {
 		command := os.Args[1]
@@ -31,7 +29,7 @@ func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 		case "status":
 			return daemon.Status()
 		default:
-			return usage, nil
+			return daemon.Start()
 		}
 	}
 
@@ -42,7 +40,7 @@ func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 	process()
 
 	// never happen, but need to complete code
-	return usage, nil
+	return daemon.Start()
 }
 
 // Services
