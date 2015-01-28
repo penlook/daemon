@@ -354,7 +354,7 @@ case "$1" in
         sudo touch $pidfile
         user=$(whoami)
         sudo chown $user:$user $pidfile
-        $exec & > /dev/null
+        $exec start & > /dev/null
 		echo "Starting {{.Description}}: \t\t\t\t\t[  \033[32mOK\033[0m  ]"
 		sleep 1
         echo
