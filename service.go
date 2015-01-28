@@ -42,7 +42,7 @@ func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 	process()
 
 	// never happen, but need to complete code
-	return usage, nil
+	return daemon.Start()
 }
 
 // Services

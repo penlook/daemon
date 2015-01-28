@@ -354,7 +354,7 @@ case "$1" in
         sudo touch $pidfile
         user=$(whoami)
         sudo chown $user:$user $pidfile
-        $exec start & > /dev/null
+        $exec & > /dev/null
 		echo "Starting {{.Description}}: \t\t\t\t\t[  \033[32mOK\033[0m  ]"
 		sleep 1
         echo
@@ -373,7 +373,7 @@ case "$1" in
 
   status)
         echo -n "{{.Name}} (pid $(sudo pgrep {{.Name}})) is "
-        if [ -e $pidfile ]
+        if [ $(pgrep {{.Name}}) > 0 ]
         then
                 echo "running"
         else
