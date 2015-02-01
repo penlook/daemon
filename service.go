@@ -3,8 +3,8 @@ package daemon
 import (
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
+	// "os/signal"
+	// "syscall"
 )
 
 // Service Daemon
@@ -34,9 +34,6 @@ func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 			return usage, nil
 		}
 	}
-
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
 
 	process := service.GetProcess()
 	process()
