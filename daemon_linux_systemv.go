@@ -362,7 +362,7 @@ case "$1" in
   stop)
 		echo "Stoping {{.Description}}: \t\t\t\t\t[  \033[32mOK\033[0m  ]"
 		sudo rm -rf $pidfile
-        PID=$(sudo pgrep api)
+        PID=$(sudo pgrep {{.Name}})
         sudo kill -9 $PID
         ;;
 
