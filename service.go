@@ -87,6 +87,19 @@ func (service Service) Initialize() {
 	fmt.Println(status)
 }
 
-func (service Service) GetInfo() {
+func (service *Service) GetInfo(serviceName string) {
+	redis_ := redis.Redis{
+		Name:   "Penlook",
+		Server: "localhost:6379",
+	}.Connect()
 
+	result, _ := redis.String(redis_.Do("GET", "service.yml"))
+
+	decoder := json.NewDecoder(strings.NewReader(result))
+	var data map[string]map[string]interface{}
+	decoder.Decode(&data)
+
+	service.Description = data[serviceName]["description"].(string)
+	service.Port = data[serviceName]["port"].(string)
+	service.Name = serviceName
 }
