@@ -86,3 +86,7 @@ func (service Service) Initialize() {
 
 	fmt.Println(status)
 }
+
+func (service Service) GetInfo() {
+
+}
