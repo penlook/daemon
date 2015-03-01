@@ -1,8 +1,11 @@
 package daemon
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/penlook/service/module/redis"
 	"os"
+	"strings"
 	// "os/signal"
 	// "syscall"
 )
@@ -99,7 +102,7 @@ func (service *Service) GetInfo(serviceName string) {
 	var data map[string]map[string]interface{}
 	decoder.Decode(&data)
 
-	service.Description = data[serviceName]["description"].(string)
-	service.Port = data[serviceName]["port"].(string)
 	service.Name = serviceName
+	service.Description = data[serviceName]["description"].(string)
+	service.Port = int(data[serviceName]["port"].(float64))
 }
