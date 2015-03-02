@@ -39,7 +39,7 @@ func (daemon *ServiceDaemon) Manage(service Service) (string, error) {
 	}
 
 	process := service.GetProcess()
-	process()
+	process(service)
 
 	// never happen, but need to complete code
 	return daemon.Start()
@@ -51,7 +51,7 @@ type Service struct {
 	Name        string
 	Description string
 	Port        int
-	Process     func()
+	Process     func(service Service)
 }
 
 func (service Service) GetName() string {
@@ -66,7 +66,7 @@ func (service Service) GetDescription() string {
 	return service.Description
 }
 
-func (service Service) GetProcess() func() {
+func (service Service) GetProcess() func(service Service) {
 	return service.Process
 }
 
